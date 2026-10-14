@@ -31,42 +31,27 @@ CREATE SCHEMA library;
 
 -- 2. Create the Books Table
 CREATE TABLE library.Books (
-    book_id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    -- Enforces exactly 13 characters for the ISBN
-    isbn CHAR(13) NOT NULL UNIQUE, 
-    CONSTRAINT chk_isbn_length CHECK (LENGTH(isbn) = 13)
+    book_id INT PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    author VARCHAR NOT NULL,
+    isbn CHAR(13) NOT NULL UNIQUE CHECK (length(isbn) = 13)
 );
 
 -- 3. Create the Members Table
 CREATE TABLE library.Members (
-    member_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    join_date DATE NOT NULL DEFAULT (CURRENT_DATE)
+    member_id INT PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    email VARCHAR NOT NULL UNIQUE,
+    join_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
--- 4. Create the Loans Table
+-- 4. Create the Loans Table (Fully Inline Architecture)
 CREATE TABLE library.Loans (
-    loan_id INT AUTO_INCREMENT PRIMARY KEY,
-    member_id INT NOT NULL,
-    book_id INT NOT NULL,
-    loan_date DATE NOT NULL DEFAULT (CURRENT_DATE),
-    return_date DATE NULL,
-    
-    -- Constraint: Prevent loans to non-existent members
-    CONSTRAINT fk_loans_member FOREIGN KEY (member_id) 
-        REFERENCES library.Members(member_id)
-        ON DELETE RESTRICT,
-        
-    -- Constraint: Prevent loans of non-existent books
-    CONSTRAINT fk_loans_book FOREIGN KEY (book_id) 
-        REFERENCES library.Books(book_id)
-        ON DELETE RESTRICT,
-        
-    -- Logical Constraint: Return date cannot happen before the loan date
-    CONSTRAINT chk_return_after_loan CHECK (return_date >= loan_date)
+    loan_id INT PRIMARY KEY,
+    member_id INT NOT NULL REFERENCES library.Members(member_id),
+    book_id INT NOT NULL REFERENCES library.Books(book_id),
+    loan_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    return_date DATE NULL CHECK (return_date IS NULL OR return_date >= loan_date)
 );
 
 ~~~
