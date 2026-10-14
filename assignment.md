@@ -79,6 +79,30 @@ id,full_name,contact_info,signup_date
 2. **Import Data:** Write the COPY command to load the CSV data into your table.  
 3. **Create a View:** Create a view called valid\_leads that filters out rows where the contact\_info does NOT contain an '@' symbol (excluding phone numbers).
 
+~~~
+-- 1. Create the Staging Table
+CREATE TABLE marketing_leads (
+    id VARCHAR,
+    full_name VARCHAR,
+    contact_info VARCHAR,
+    signup_date VARCHAR
+);
+
+-- 2. Import Data from the CSV
+COPY marketing_leads FROM '/Users/Tuan Tong/Downloads/leads_raw.csv' (HEADER true, DELIMITER ',');
+
+-- 3. Create the Filtered View
+CREATE VIEW valid_leads AS
+SELECT 
+    id,
+    full_name,
+    contact_info,
+    signup_date
+FROM 
+    marketing_leads
+WHERE 
+    contact_info LIKE '%@%';
+~~~
 ---
 
 ## **Advanced Parts for learner with Python knowledge(Optional)**
